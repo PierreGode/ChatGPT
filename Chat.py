@@ -1,14 +1,12 @@
+#OpenAI Talk to ChatGPT by Pierre Gode
 import openai
 import speech_recognition as sr
 from gtts import gTTS
 import time
-
 # initialize the API client with your API key
 openai.api_key = "YOUR API KEY HERE"
-
 # initialize the speech recognition engine
 r = sr.Recognizer()
-
 # function to convert voice commands to text
 def transcribe_speech_to_text():
     with sr.Microphone() as source:
