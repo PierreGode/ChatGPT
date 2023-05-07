@@ -4,6 +4,7 @@ import speech_recognition as sr
 from gtts import gTTS
 import time
 import logging
+from os import system
 
 # initialize the API client with your API key
 openai.api_key = "YOUR API KEY HERE"
@@ -54,31 +55,26 @@ while True:
             temperature=0.5,
         )
         # extract response text from API response
-        response_text = response["choices"][0]["text"]
+        response_text = response["choices"][0]["text"].strip()
+        
+        # check if the response is empty or not understood
+        if not response_text:
+            response_text = "I'm sorry, I didn't understand what you said. Can you please repeat?"
+
         print("Response: ", response_text)
         # generate audio from response text
         generate_audio_from_text(response_text)
         # play the audio file
-        from os import system
         system("mpg321 response.mp3")
 
         questions_asked += 1
         if questions_asked >= 5:
             print("5 questions limit reached, waiting for the trigger word...")
             questions_asked = 0
-    elif voice_command and "tell me more" in voice_command.lower():
-        response_text = "I'm sorry, I'm not able to answer that right now. Can I help you with something else?"
-        print("Response: ", response_text)
-        # generate audio from response text
-        generate_audio_from_text(response_text)
-        # play the audio file
-        from os import system
-        system("mpg321 response.mp3")
     elif voice_command:
         response_text = "I'm sorry, I didn't understand what you said. Can you please repeat?"
         print("Response: ", response_text)
         # generate audio from response text
         generate_audio_from_text(response_text)
         # play the audio file
-        from os import system
         system("mpg321 response.mp3")
