@@ -3,10 +3,17 @@ import openai
 import speech_recognition as sr
 from gtts import gTTS
 import time
+import logging
+
 # initialize the API client with your API key
 openai.api_key = "YOUR API KEY HERE"
+
 # initialize the speech recognition engine
 r = sr.Recognizer()
+
+# initialize the logger
+logging.basicConfig(filename='chatgpt.log', level=logging.ERROR)
+
 # function to convert voice commands to text
 def transcribe_speech_to_text():
     with sr.Microphone() as source:
@@ -16,6 +23,7 @@ def transcribe_speech_to_text():
         return r.recognize_google(audio)
     except Exception as e:
         print("Error transcribing speech: ", e)
+        logging.error("Error transcribing speech: %s" % e)
         return None
 
 # function to generate audio from text
@@ -37,6 +45,7 @@ while True:
     # transcribe voice command to text
     voice_command = transcribe_speech_to_text()
     if voice_command and "elsa" in voice_command.lower():
+        print("Processing request...")
         # send text request to OpenAI API
         response = openai.Completion.create(
             engine="text-davinci-002",
@@ -59,6 +68,14 @@ while True:
             questions_asked = 0
     elif voice_command and "tell me more" in voice_command.lower():
         response_text = "I'm sorry, I'm not able to answer that right now. Can I help you with something else?"
+        print("Response: ", response_text)
+        # generate audio from response text
+        generate_audio_from_text(response_text)
+        # play the audio file
+        from os import system
+        system("mpg321 response.mp3")
+    elif voice_command:
+        response_text = "I'm sorry, I didn't understand what you said. Can you please repeat?"
         print("Response: ", response_text)
         # generate audio from response text
         generate_audio_from_text(response_text)
